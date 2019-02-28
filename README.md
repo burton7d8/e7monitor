@@ -1,7 +1,7 @@
 # e7monitor
 Monitors PON &amp; ONT Eth Port traffic on E7's
 
-Edit index.php and edit this line "$e7s = array('node-name-1','node-name-2','node-name-3');" to include the node names of your e7's
+Edit index.php and edit this line "$e7s = array('node-name-1','node-name-2','node-name-3');" to include the dns hostname or ip addres of your e7 nodes ( this is what the snmpget will use to connect to the e7 )
 
 Edit query.php and edit this line "$pw = "public";" and update to the snmp read community string of your e7's
 
