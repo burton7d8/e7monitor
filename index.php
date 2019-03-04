@@ -1,103 +1,4 @@
 <?php
-/*
-The MIT License (MIT)
-
-Copyright (c) 2019 pon & ont eth port monitor
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
-/*
-jquery.js
-Copyright JS Foundation and other contributors, https://js.foundation/
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
-/*
-moment-min.js
-Copyright (c) JS Foundation and other contributors
-
-Permission is hereby granted, free of charge, to any person
-obtaining a copy of this software and associated documentation
-files (the "Software"), to deal in the Software without
-restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
-conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-*/
-
-
-/*
-charts.js
-The MIT License (MIT)
-
-Copyright (c) 2018 Chart.js Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
-
-/*
-chartjs-plugin-streaming
-
-The MIT License (MIT)
-
-Copyright (c) 2018 Akihiko Kusanagi
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
-
-
-
-
-
-$e7s = array('node-name-1','node-name-2','node-name-3');  // add your e7 nodes here
-asort($e7s); // remove this line if you want them in your own set order above
-
 
 if(!$op)
 {
@@ -201,8 +102,6 @@ elseif($op == "go")
         $ethdownmax = $_POST["ethdownmax"];
         $ethupmax = $_POST["ethupmax"];
         
-	$pon_url = "query.php?node=$node&shelf=$shelf&slot=$slot&pon=$pon&type=pon";
-        $eth_url = "query.php?node=$node&ont=$ont&ethport=$ethport&type=eth&ont_type=$ont_type";
 
 
 	if($mon_ont == "yes")
@@ -226,8 +125,20 @@ elseif($op == "go")
 					
 			die();
 		}
-	}
 
+		if($ont_type == "halfer")
+		{
+			$sleeper = 6000;
+			$slower = "yes";
+		}
+		else
+			$sleeper = 5000;
+	}
+	else
+		$sleeper = 5000;
+
+	$pon_url = "query2.php?node=$node&shelf=$shelf&slot=$slot&pon=$pon&type=pon&slower=$slower";
+        $eth_url = "query2.php?node=$node&ont=$ont&ethport=$ethport&type=eth&ont_type=$ont_type&slower=$slower";
 	$starttime = time() * 1000;
 }
 
@@ -268,6 +179,7 @@ elseif($op == "go")
 				//refresh: 3000, 
 				//delay: 5000,
 
+
 var starttime = Date.now();
 
 var ctx1 = document.getElementById('chart1').getContext('2d');
@@ -300,8 +212,8 @@ options: {
 		  realtime: { 
 				duration: 300000, 
 				//ttl: 300000, 
-				refresh: 5000, 
-				delay: 5000,
+				refresh: <?php print $sleeper?>, 
+				delay: <?php print $sleeper?>,
 		                onRefresh: function(chart) 
 				{
 					if(window.starttime == "stop")
@@ -360,7 +272,6 @@ options: {
 		}
 	}
 });
-
 <?php
 	if($mon_ont != "yes")
 	{
@@ -408,8 +319,8 @@ options: {
 		  realtime: { 
 				duration: 300000, 
 				//ttl: 300000, 
-				refresh: 5000, 
-				delay: 5000,
+				refresh: <?php print $sleeper?>, 
+				delay: <?php print $sleeper?>,
 		                onRefresh: function(chart) 
 				{
 					if(window.starttime == "stop")
