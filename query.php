@@ -20,6 +20,7 @@ $pw = "public"; // Set your snmp read community string here
 
 $type = $_GET["type"];
 $ont_type = $_GET["ont_type"];
+$slower = $_GET["slower"];
 $node = $_GET["node"]; 
 $shelf = $_GET["shelf"];
 $slot = $_GET["slot"];
@@ -28,6 +29,11 @@ $ont = $_GET["ont"];
 $ethport = $_GET["ethport"];
 
 $failure = "$type $ont_type FAILURES: ";
+
+if($slower == "yes")
+	$sleeper = 5;
+else
+	$sleeper = 3;
 
 switch($type)
 {
@@ -48,10 +54,11 @@ switch($type)
 		
 		$start_mib = ".1.3.6.1.2.1.31.1.1.1.6.";
 		$out_mib = $start_mib.$ont_mib;
-		//$failure.=$in_mib." ";
+		$failure.=$in_mib." ";
 		break;
 	
 }
+
 function errorHandler($errno, $errstr, $errfile, $errline) {
     throw new Exception($errstr, $errno);
 }
@@ -61,6 +68,7 @@ set_error_handler('errorHandler');
 try 
 {
 	$y_in_a = str_replace("Counter64: ","",snmp2_get($node,$pw,$in_mib,1000000));
+	$failure.="y_in_a: $y_in_a | ";
 }
 catch (Exception $e) 
 {
@@ -70,6 +78,7 @@ catch (Exception $e)
 try 
 {
 	$y_out_a = str_replace("Counter64: ","",snmp2_get($node,$pw,$out_mib,1000000));
+	$failure.="y_out_a: $y_out_a | ";
 }
 catch (Exception $e) 
 {
@@ -77,11 +86,12 @@ catch (Exception $e)
 	$failure.="out_a | ";
 }
 
+sleep($sleeper);
 
-sleep(3);
 try
 {
 	$y_in_b = str_replace("Counter64: ","",snmp2_get($node,$pw,$in_mib,1000000));
+	$failure.="y_in_b: $y_in_b | ";
 }	
 catch (Exception $e) 
 {
@@ -92,6 +102,7 @@ catch (Exception $e)
 try
 {
 	$y_out_b = str_replace("Counter64: ","",snmp2_get($node,$pw,$out_mib,1000000));
+	$failure.="y_out_b: $y_out_b | ";
 }	
 catch (Exception $e) 
 {
@@ -105,14 +116,16 @@ catch (Exception $e)
 if(($y_in_a !== false && $y_in_b !== false) || ($y_in_a > $y_in_b))
 {
 	if($type == "pon")
-		$ydown = ((($y_in_b - $y_in_a) / 3 ) / 125000);
+		$ydown = ((($y_in_b - $y_in_a) / $sleeper ) / 125000);
 	elseif($type == "eth" && $ont_type == "halfer")
-		$ydown = ((($y_in_b - $y_in_a) / 3 ) / 250000);
+		$ydown = ((($y_in_b - $y_in_a) / $sleeper ) / 155000);
 	else
-		$ydown = ((($y_in_b - $y_in_a) / 3 ) / 125000);
+		$ydown = ((($y_in_b - $y_in_a) / $sleeper ) / 125000);
 
-	if ($ydown > 0 && $ydown < 1) $ydown=1;
-	else $ydown = round($ydown);
+//	if ($ydown > 0 && $ydown < 1) $ydown=1;
+//	else $ydown = round($ydown);
+	
+	$ydown = round($ydown,2);
 }
 else
 	$ydown = 0;
@@ -120,22 +133,25 @@ else
 if(($y_out_a !== false && $y_out_b !== false) || ($y_out_a > $y_out_b))
 {
 	if($type == "pon")
-		$yup = ((($y_out_b - $y_out_a) / 3 ) / 125000);
+		$yup = ((($y_out_b - $y_out_a) / $sleeper ) / 125000);
 	elseif($type == "eth" && $ont_type == "halfer")
-		$yup = ((($y_out_b - $y_out_a) / 3 ) / 250000);
+		$yup = ((($y_out_b - $y_out_a) / $sleeper ) / 165000);
 	else
-		$yup = ((($y_out_b - $y_out_a) / 3 ) / 125000);
+		$yup = ((($y_out_b - $y_out_a) / $sleeper ) / 125000);
 
-	if ($yup > 0 && $yup < 1) $yup=1;
-	else $yup = round($yup);
+//	if ($yup > 0 && $yup < 1) $yup=1;
+//	else $yup = round($yup);
+	
+	$yup = round($yup,2);
 }
 else
 	$yup = 0;
-
+/*
 if($yup < 0)
 	$yup = 0;
 if($ydown < 0)
 	$ydown = 0;
+*/
 
 header("Content-type: text/json");
 // The x value is the current JavaScript time, which is the Unix time multiplied by 1000.
