@@ -47,7 +47,7 @@ switch($type)
 		$out_mib = $start_mib.$pon_mib;
 		break;
 	case "eth":
-		$ont_mib = (($ont - 1) * 32) + $ethport + 100000;;
+		$ont_mib = (($ont - 1) * 32) + $ethport + 100000;
 		
 		$start_mib = ".1.3.6.1.2.1.31.1.1.1.10.";
 		$in_mib = $start_mib.$ont_mib;
