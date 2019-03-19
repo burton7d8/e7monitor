@@ -70,7 +70,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 $e7s = array('node-name-1','node-name-2','node-name-3');  // add your e7 nodes here
 asort($e7s); // remove this line if you want them in your own set order above
 
-
+$op = isset($_POST['op']) ? $_POST['op'] : '';
 
 if(!$op)
 {
@@ -161,6 +161,8 @@ if(!$op)
 }
 elseif($op == "go")
 {
+	$mon_ont = isset($_POST['mon_ont']) ? $_POST['mon_ont'] : '';
+	$slower = isset($_POST['slower']) ? $_POST['slower'] : '';
 
         $node = $_POST["node"];
         $shelf = $_POST["shelf"];
