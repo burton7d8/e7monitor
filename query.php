@@ -17,16 +17,15 @@ $pw = "public"; // Set your snmp read community string here
 //error_reporting(E_ALL);
 //ini_set('display_errors', 1);
 
-
-$type = $_GET["type"];
-$ont_type = $_GET["ont_type"];
-$slower = $_GET["slower"];
-$node = $_GET["node"]; 
-$shelf = $_GET["shelf"];
-$slot = $_GET["slot"];
-$pon = $_GET["pon"];
-$ont = $_GET["ont"];
-$ethport = $_GET["ethport"];
+$type = isset($_GET["type"]) ? $_GET["type"] : '';
+$ont_type = isset($_GET["ont_type"]) ? $_GET["ont_type"] : '';
+$slower = isset($_GET["slower"]) ? $_GET["slower"] : '';
+$node = isset($_GET["node"]) ? $_GET["node"] : ''; 
+$shelf = isset($_GET["shelf"]) ? $_GET["shelf"] : '';
+$slot = isset($_GET["slot"]) ? $_GET["slot"] : '';
+$pon = isset($_GET["pon"]) ? $_GET["pon"] : '';
+$ont = isset($_GET["ont"]) ? $_GET["ont"] : '';
+$ethport = isset($_GET["ethport"]) ? $_GET["ethport"] : '';
 
 $failure = "$type $ont_type FAILURES: ";
 
